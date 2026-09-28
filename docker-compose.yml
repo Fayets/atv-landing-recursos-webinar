@@ -1,0 +1,20 @@
+services:
+  backend:
+    build: ./backend
+    container_name: recursos-backend
+    environment:
+      PYTHONUNBUFFERED: "1"
+    env_file:
+      - ./backend/.env
+    ports:
+      - "127.0.0.1:8019:8000"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: recursos-frontend
+    ports:
+      - "127.0.0.1:8099:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
