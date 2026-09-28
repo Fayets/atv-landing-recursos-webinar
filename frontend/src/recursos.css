@@ -537,7 +537,7 @@ textarea.rc-input { resize: none; overflow: hidden; min-height: 96px; }
 }
 
 /* =========================================================
-   Inicio y panel interno
+   Inicio (la raíz, por si alguien la abre)
    ========================================================= */
 
 .page {
@@ -554,14 +554,6 @@ textarea.rc-input { resize: none; overflow: hidden; min-height: 96px; }
 .eyebrow { margin: 0 0 10px; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--t3); }
 .title { margin: 0 0 10px; font-size: 32px; font-weight: 600; letter-spacing: -0.04em; line-height: 1.08; }
 .areas { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
-.gate { width: 100%; display: flex; flex-direction: column; gap: 12px; }
-.gate-input {
-  width: 100%; height: 52px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--line2);
-  background: var(--s1); text-align: center; font-size: 18px; outline: none;
-}
-.gate-input:focus { border-color: rgba(214, 92, 92, 0.7); box-shadow: 0 0 0 4px rgba(176, 69, 69, 0.18); }
-.error { margin: 0; color: #f08a8a; font-size: 14px; }
-
 .btn {
   appearance: none; border: 0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
   gap: 8px; width: 100%; min-height: 48px; padding: 0 18px; border-radius: 12px; background: var(--red);
@@ -576,31 +568,6 @@ textarea.rc-input { resize: none; overflow: hidden; min-height: 96px; }
   .btn-ghost:hover { background: rgba(255, 255, 255, 0.05); color: var(--t1); }
 }
 
-.admin { max-width: 1100px; margin: 0 auto; padding: 36px 20px 60px; }
-.admin-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
-.admin-head .btn { width: auto; min-height: 40px; }
-.admin-actions { display: flex; gap: 8px; }
-.admin-title { margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.03em; }
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 22px; }
-.stat { padding: 16px 18px; border-radius: 14px; background: var(--s1); box-shadow: inset 0 0 0 1px var(--line); }
-.stat h2 { margin: 0 0 12px; font-size: 14px; font-weight: 600; color: var(--t2); }
-.stat dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0; }
-.stat dt { font-size: 11px; color: var(--t3); }
-.stat dd { margin: 0; font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-.chip {
-  appearance: none; border: 0; cursor: pointer; padding: 7px 14px; border-radius: 999px; font-size: 13px;
-  color: var(--t2); background: transparent; box-shadow: inset 0 0 0 1px var(--line2);
-}
-.chip.is-on { color: var(--t1); background: var(--red-soft); box-shadow: inset 0 0 0 1px rgba(214, 92, 92, 0.45); }
-.table-wrap { border-radius: 14px; box-shadow: inset 0 0 0 1px var(--line); overflow-x: auto; }
-.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-.table th { padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 500; color: var(--t3); background: var(--s1); border-bottom: 1px solid var(--line); }
-.table td { padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
-.table tr:last-child td { border-bottom: 0; }
-.table .nowrap { white-space: nowrap; }
-.table .muted { color: var(--t2); }
-.table .empty { text-align: center; color: var(--t3); padding: 32px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; transition: none !important; }
