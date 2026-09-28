@@ -217,7 +217,7 @@ function Sops({ area, info, solicitudId }) {
           <a
             key={sop.titulo}
             className={`rc-sop${sop.imagen ? ' rc-sop--cover' : ''}`}
-            href={href}
+            href={whatsappHref(area, solicitudId, sop.titulo)}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Desbloquear ${sop.titulo} por WhatsApp`}

@@ -40,8 +40,8 @@ class RecursosServices:
         return schemas.SolicitudResponse(id=solicitud.id)
 
     @db_session
-    def whatsapp_url(self, slug: str, solicitud_id: int | None) -> str:
-        """Suma el click (si viene de una solicitud) y arma el link al chat de ATV."""
+    def whatsapp_url(self, slug: str, solicitud_id: int | None, recurso: str | None) -> str:
+        """Suma el click (si viene de una solicitud) y arma el link al chat de Juan."""
         area = get_area(slug)
         if solicitud_id:
             solicitud = Solicitud.get(id=solicitud_id, area=slug)
@@ -50,8 +50,6 @@ class RecursosServices:
         numero = re.sub(r"\D", "", config("WHATSAPP_NUMBER", default=""))
         if not numero:
             raise HTTPException(status_code=503, detail="Falta configurar WHATSAPP_NUMBER.")
-        texto = config(
-            "WHATSAPP_TEXT",
-            default="Hola! Vengo del webinar y quiero desbloquear los SOPs de {area} 🔓",
-        ).format(area=area["nombre"])
-        return f"https://wa.me/{numero}?text={quote(texto)}"
+        # El nombre del SOP tocado; el botón general pide los del área.
+        nombre = " ".join((recurso or "").split())[:120] or f"los SOPs de {area['nombre']}"
+        return f"https://wa.me/{numero}?text={quote(f'Juan, quiero desbloquear {nombre}')}"

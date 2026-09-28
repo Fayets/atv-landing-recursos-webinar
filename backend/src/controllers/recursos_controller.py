@@ -31,10 +31,10 @@ def crear_solicitud(area: str, body: schemas.SolicitudRequest):
 
 
 @router.get("/{area}/whatsapp")
-def whatsapp(area: str, s: Optional[int] = None):
+def whatsapp(area: str, s: Optional[int] = None, r: Optional[str] = None):
     """El candado apunta acá: se cuenta el click en el server y recién ahí se redirige."""
     try:
-        return RedirectResponse(service.whatsapp_url(area, s), status_code=302)
+        return RedirectResponse(service.whatsapp_url(area, s, r), status_code=302)
     except HTTPException as e:
         raise e
     except Exception:

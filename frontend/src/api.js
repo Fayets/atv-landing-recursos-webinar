@@ -32,8 +32,13 @@ export const crearSolicitud = (area, body) =>
   request(`/api/recursos/${area}/solicitudes`, { method: 'POST', body }).then((r) => r.json())
 
 // El click se cuenta en el server, que después redirige a wa.me.
-export const whatsappHref = (area, solicitudId) =>
-  `${BASE}/api/recursos/${area}/whatsapp${solicitudId ? `?s=${solicitudId}` : ''}`
+export function whatsappHref(area, solicitudId, recurso) {
+  const params = new URLSearchParams()
+  if (solicitudId) params.set('s', solicitudId)
+  if (recurso) params.set('r', recurso)
+  const qs = params.toString()
+  return `${BASE}/api/recursos/${area}/whatsapp${qs ? `?${qs}` : ''}`
+}
 
 export const getAdmin = (pin) => request('/api/admin/solicitudes', { pin }).then((r) => r.json())
 export const downloadCsv = (pin) => request('/api/admin/solicitudes.csv', { pin }).then((r) => r.blob())
