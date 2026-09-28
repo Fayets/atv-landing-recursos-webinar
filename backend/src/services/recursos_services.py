@@ -4,7 +4,9 @@ from urllib.parse import quote
 
 from decouple import config
 from fastapi import HTTPException
-from pony.orm import db_session
+from datetime import datetime, timedelta
+
+from pony.orm import db_session, desc, select
 
 from src import schemas
 from src.areas import get_area, password_for
@@ -30,12 +32,22 @@ class RecursosServices:
         digitos = re.sub(r"\D", "", body.telefono)
         if len(digitos) < 8:
             raise HTTPException(status_code=422, detail="Revisá el número: le faltan dígitos.")
-        solicitud = Solicitud(
-            area=slug,
-            telefono=body.telefono.strip(),
-            cuello=body.cuello.strip(),
-            intento=body.intento.strip(),
-        )
+        # Si el mismo número ya la mandó hace poco (reintento, doble toque), se actualiza esa.
+        desde = datetime.utcnow() - timedelta(minutes=30)
+        previas = select(
+            x for x in Solicitud if x.area == slug and x.telefono == body.telefono.strip() and x.created_at >= desde
+        ).order_by(desc(Solicitud.id))[:1]
+        if previas:
+            solicitud = previas[0]
+            solicitud.cuello = body.cuello.strip()
+            solicitud.intento = body.intento.strip()
+        else:
+            solicitud = Solicitud(
+                area=slug,
+                telefono=body.telefono.strip(),
+                cuello=body.cuello.strip(),
+                intento=body.intento.strip(),
+            )
         solicitud.flush()
         return schemas.SolicitudResponse(id=solicitud.id)
 

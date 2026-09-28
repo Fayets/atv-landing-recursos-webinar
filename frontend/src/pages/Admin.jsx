@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { downloadCsv, getAdmin } from '../api.js'
+import { downloadCsv, getAdmin, resetDatos } from '../api.js'
 import { AREAS } from '../content/areas.js'
 
 const PIN_KEY = 'recursos_pin'
@@ -70,6 +70,13 @@ export default function Admin() {
     URL.revokeObjectURL(url)
   }
 
+  const vaciar = async () => {
+    const total = data.areas.reduce((n, a) => n + a.desbloqueos + a.solicitudes, 0)
+    if (!window.confirm(`Esto borra ${total} registros de las tres áreas (desbloqueos y formularios). Usalo antes del vivo para sacar las pruebas. ¿Seguro?`)) return
+    await resetDatos(pin)
+    cargar(pin)
+  }
+
   return (
     <main className="admin">
       <header className="admin-head">
@@ -77,7 +84,10 @@ export default function Admin() {
           <p className="eyebrow">Recursos · Panel</p>
           <h1 className="admin-title">Solicitudes del webinar</h1>
         </div>
-        <button className="btn btn-ghost" onClick={exportar}>Exportar CSV</button>
+        <div className="admin-actions">
+          <button className="btn btn-ghost" onClick={vaciar}>Vaciar datos</button>
+          <button className="btn btn-ghost" onClick={exportar}>Exportar CSV</button>
+        </div>
       </header>
 
       <div className="stats">

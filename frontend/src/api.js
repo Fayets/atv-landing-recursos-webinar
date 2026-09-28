@@ -1,10 +1,27 @@
 export const BASE = import.meta.env.VITE_API_BASE_URL || ''
 
+const esperar = (ms) => new Promise((r) => setTimeout(r, ms))
+
+// Con todo el webinar entrando a la vez, un corte de red o un 502/503/504 puntual no
+// tiene que llegarle a la persona: se reintenta dos veces antes de mostrar el error.
+async function fetchConReintento(url, init) {
+  const pausas = [700, 1800]
+  for (let intento = 0; ; intento++) {
+    try {
+      const res = await fetch(url, init)
+      if (![502, 503, 504].includes(res.status) || intento >= pausas.length) return res
+    } catch (err) {
+      if (intento >= pausas.length) throw new Error('Se cortó la conexión. Probá de nuevo.', { cause: err })
+    }
+    await esperar(pausas[intento])
+  }
+}
+
 async function request(path, { method = 'GET', body, pin } = {}) {
   const headers = {}
   if (body !== undefined) headers['Content-Type'] = 'application/json'
   if (pin) headers['X-Admin-Pin'] = pin
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await fetchConReintento(`${BASE}${path}`, {
     method,
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -41,4 +58,5 @@ export function whatsappHref(area, solicitudId, recurso) {
 }
 
 export const getAdmin = (pin) => request('/api/admin/solicitudes', { pin }).then((r) => r.json())
+export const resetDatos = (pin) => request('/api/admin/reset', { method: 'POST', pin }).then((r) => r.json())
 export const downloadCsv = (pin) => request('/api/admin/solicitudes.csv', { pin }).then((r) => r.blob())

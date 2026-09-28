@@ -31,3 +31,13 @@ def get_solicitudes_csv():
         raise e
     except Exception:
         raise HTTPException(status_code=500, detail="Error inesperado al exportar.")
+
+
+@router.post("/reset")
+def reset():
+    try:
+        return service.reset()
+    except HTTPException as e:
+        raise e
+    except Exception:
+        raise HTTPException(status_code=500, detail="Error inesperado al vaciar los datos.")

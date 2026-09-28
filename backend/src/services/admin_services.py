@@ -1,7 +1,7 @@
 import csv
 import io
 
-from pony.orm import count, db_session, desc, select
+from pony.orm import count, db_session, delete, desc, select
 
 from src import schemas
 from src.areas import AREAS
@@ -38,6 +38,12 @@ class AdminServices:
             solicitudes=items,
             ultima=items[0].created_at if items else None,
         )
+
+    @db_session
+    def reset(self) -> dict:
+        """Borra desbloqueos y solicitudes: para dejar el panel en cero antes del vivo."""
+        borradas = {"desbloqueos": delete(d for d in Desbloqueo), "solicitudes": delete(s for s in Solicitud)}
+        return borradas
 
     def csv(self) -> str:
         data = self.resumen()
