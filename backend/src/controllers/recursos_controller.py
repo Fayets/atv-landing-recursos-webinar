@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Header, HTTPException
 from fastapi.responses import RedirectResponse
 
 from src import schemas
@@ -21,9 +21,9 @@ def unlock(area: str, body: schemas.UnlockRequest):
 
 
 @router.post("/{area}/solicitudes", response_model=schemas.SolicitudResponse)
-def crear_solicitud(area: str, body: schemas.SolicitudRequest):
+def crear_solicitud(area: str, body: schemas.SolicitudRequest, x_recursos_token: str = Header(default="")):
     try:
-        return service.crear_solicitud(area, body)
+        return service.crear_solicitud(area, body, x_recursos_token)
     except HTTPException as e:
         raise e
     except Exception:
@@ -31,10 +31,10 @@ def crear_solicitud(area: str, body: schemas.SolicitudRequest):
 
 
 @router.get("/{area}/whatsapp")
-def whatsapp(area: str, s: Optional[int] = None, r: Optional[str] = None):
+def whatsapp(area: str, s: Optional[int] = None, r: Optional[str] = None, t: Optional[str] = None):
     """El candado apunta acá: se cuenta el click en el server y recién ahí se redirige."""
     try:
-        return RedirectResponse(service.whatsapp_url(area, s, r), status_code=302)
+        return RedirectResponse(service.whatsapp_url(area, s, r, t), status_code=302)
     except HTTPException as e:
         raise e
     except Exception:

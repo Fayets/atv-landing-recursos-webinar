@@ -45,11 +45,17 @@ class AdminServices:
         borradas = {"desbloqueos": delete(d for d in Desbloqueo), "solicitudes": delete(s for s in Solicitud)}
         return borradas
 
+    @staticmethod
+    def _celda(valor):
+        # Excel ejecuta como fórmula lo que empieza con = + - @: se neutraliza con un apóstrofe.
+        texto = str(valor)
+        return "'" + texto if texto[:1] in ("=", "+", "-", "@", "\t", "\r") else texto
+
     def csv(self) -> str:
         data = self.resumen()
         out = io.StringIO()
         writer = csv.writer(out)
         writer.writerow(["id", "area", "telefono", "cuello_de_botella", "que_intento", "clicks_whatsapp", "fecha_utc"])
         for s in data.solicitudes:
-            writer.writerow([s.id, s.area, s.telefono, s.cuello, s.intento, s.whatsapp_clicks, s.created_at.isoformat()])
+            writer.writerow([s.id, s.area, self._celda(s.telefono), self._celda(s.cuello), self._celda(s.intento), s.whatsapp_clicks, s.created_at.isoformat()])
         return "﻿" + out.getvalue()

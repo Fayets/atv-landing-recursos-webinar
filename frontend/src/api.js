@@ -4,12 +4,13 @@ const esperar = (ms) => new Promise((r) => setTimeout(r, ms))
 
 // Con todo el webinar entrando a la vez, un corte de red o un 502/503/504 puntual no
 // tiene que llegarle a la persona: se reintenta dos veces antes de mostrar el error.
+// El 429 es el límite de pedidos del nginx: esperar un segundo alcanza.
 async function fetchConReintento(url, init) {
   const pausas = [700, 1800]
   for (let intento = 0; ; intento++) {
     try {
       const res = await fetch(url, init)
-      if (![502, 503, 504].includes(res.status) || intento >= pausas.length) return res
+      if (![429, 502, 503, 504].includes(res.status) || intento >= pausas.length) return res
     } catch (err) {
       if (intento >= pausas.length) throw new Error('Se cortó la conexión. Probá de nuevo.', { cause: err })
     }
@@ -17,8 +18,9 @@ async function fetchConReintento(url, init) {
   }
 }
 
-async function request(path, { method = 'GET', body, pin } = {}) {
+async function request(path, { method = 'GET', body, pin, token } = {}) {
   const headers = {}
+  if (token) headers['X-Recursos-Token'] = token
   if (body !== undefined) headers['Content-Type'] = 'application/json'
   if (pin) headers['X-Admin-Pin'] = pin
   const res = await fetchConReintento(`${BASE}${path}`, {
@@ -45,13 +47,14 @@ async function request(path, { method = 'GET', body, pin } = {}) {
 export const unlock = (area, password) =>
   request(`/api/recursos/${area}/unlock`, { method: 'POST', body: { password } }).then((r) => r.json())
 
-export const crearSolicitud = (area, body) =>
-  request(`/api/recursos/${area}/solicitudes`, { method: 'POST', body }).then((r) => r.json())
+export const crearSolicitud = (area, body, token) =>
+  request(`/api/recursos/${area}/solicitudes`, { method: 'POST', body, token }).then((r) => r.json())
 
 // El click se cuenta en el server, que después redirige a wa.me.
-export function whatsappHref(area, solicitudId, recurso) {
+export function whatsappHref(area, solicitudId, recurso, token) {
   const params = new URLSearchParams()
   if (solicitudId) params.set('s', solicitudId)
+  if (token) params.set('t', token)
   if (recurso) params.set('r', recurso)
   const qs = params.toString()
   return `${BASE}/api/recursos/${area}/whatsapp${qs ? `?${qs}` : ''}`

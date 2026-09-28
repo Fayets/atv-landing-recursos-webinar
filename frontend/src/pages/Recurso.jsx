@@ -18,8 +18,9 @@ export default function Recurso() {
     window.scrollTo(0, 0)
   }
 
-  if (!progreso.desbloqueado) {
-    return <Contrasena area={area} info={info} onOk={() => avanzar({ desbloqueado: true })} />
+  // Sin pase firmado no hay acceso: el viejo { desbloqueado: true } ya no alcanza.
+  if (!progreso.token) {
+    return <Contrasena area={area} info={info} aviso={progreso.aviso} onOk={(token) => setProgreso(guardarProgreso(area, { token, aviso: '' }))} />
   }
   return (
     <div className="rc-root">
@@ -28,9 +29,15 @@ export default function Recurso() {
       </header>
       {progreso.solicitudId ? null : <SopSides sops={info.sops} mobile={false} />}
       {progreso.solicitudId ? (
-        <Sops area={area} info={info} solicitudId={progreso.solicitudId} />
+        <Sops area={area} info={info} solicitudId={progreso.solicitudId} token={progreso.token} />
       ) : (
-        <Formulario area={area} info={info} onOk={(id) => avanzar({ solicitudId: id })} />
+        <Formulario
+          area={area}
+          info={info}
+          token={progreso.token}
+          onOk={(id) => avanzar({ solicitudId: id })}
+          onVencido={(aviso) => setProgreso(guardarProgreso(area, { token: '', aviso }))}
+        />
       )}
     </div>
   )
@@ -46,9 +53,9 @@ function Spinner() {
   return <span className="rc-spin" aria-hidden="true" />
 }
 
-function Contrasena({ area, info, onOk }) {
+function Contrasena({ area, info, aviso, onOk }) {
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [error, setError] = useState(aviso || '')
   const [loading, setLoading] = useState(false)
 
   const onSubmit = async (e) => {
@@ -56,8 +63,8 @@ function Contrasena({ area, info, onOk }) {
     setError('')
     setLoading(true)
     try {
-      await unlock(area, password)
-      onOk()
+      const { token } = await unlock(area, password)
+      onOk(token)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -103,7 +110,7 @@ function Contrasena({ area, info, onOk }) {
   )
 }
 
-function Formulario({ area, info, onOk }) {
+function Formulario({ area, info, token, onOk, onVencido }) {
   const [telefono, setTelefono] = useState('')
   const [cuello, setCuello] = useState('')
   const [otro, setOtro] = useState('')
@@ -119,9 +126,10 @@ function Formulario({ area, info, onOk }) {
     setError('')
     setLoading(true)
     try {
-      const { id } = await crearSolicitud(area, { telefono, cuello: cuelloFinal, intento })
+      const { id } = await crearSolicitud(area, { telefono, cuello: cuelloFinal, intento }, token)
       onOk(id)
     } catch (err) {
+      if (err.status === 401) return onVencido(err.message)
       setError(err.message)
     } finally {
       setLoading(false)
@@ -204,8 +212,8 @@ function Formulario({ area, info, onOk }) {
   )
 }
 
-function Sops({ area, info, solicitudId }) {
-  const href = whatsappHref(area, solicitudId)
+function Sops({ area, info, solicitudId, token }) {
+  const href = whatsappHref(area, solicitudId, undefined, token)
   return (
     <main className="rc-main rc-main--wide">
       <h1 className="rc-title">
@@ -218,7 +226,7 @@ function Sops({ area, info, solicitudId }) {
           <a
             key={sop.titulo}
             className={`rc-sop${sop.imagen ? ' rc-sop--cover' : ''}`}
-            href={whatsappHref(area, solicitudId, sop.titulo)}
+            href={whatsappHref(area, solicitudId, sop.titulo, token)}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Desbloquear ${sop.titulo} por WhatsApp`}

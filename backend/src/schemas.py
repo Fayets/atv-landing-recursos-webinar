@@ -14,6 +14,7 @@ class UnlockRequest(BaseModel):
 
 class UnlockResponse(BaseModel):
     ok: bool
+    token: str
 
 
 class SolicitudRequest(BaseModel):

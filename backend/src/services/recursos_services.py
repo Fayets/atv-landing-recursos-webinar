@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 from pony.orm import db_session, desc, select
 
-from src import schemas
+from src import acceso, schemas
 from src.areas import get_area, password_for
 from src.models import Desbloqueo, Solicitud
 
@@ -27,11 +27,12 @@ class RecursosServices:
         if not hmac.compare_digest(esperada.encode(), _normalizar(password).encode()):
             raise HTTPException(status_code=401, detail="Esa no es la contraseña. Escuchá a Juan 👀")
         Desbloqueo(area=slug)
-        return schemas.UnlockResponse(ok=True)
+        return schemas.UnlockResponse(ok=True, token=acceso.emitir(slug))
 
     @db_session
-    def crear_solicitud(self, slug: str, body: schemas.SolicitudRequest) -> schemas.SolicitudResponse:
+    def crear_solicitud(self, slug: str, body: schemas.SolicitudRequest, pase: str | None) -> schemas.SolicitudResponse:
         get_area(slug)
+        acceso.exigir(slug, pase)
         digitos = re.sub(r"\D", "", body.telefono)
         if len(digitos) < 8:
             raise HTTPException(status_code=422, detail="Revisá el número: le faltan dígitos.")
@@ -55,10 +56,10 @@ class RecursosServices:
         return schemas.SolicitudResponse(id=solicitud.id)
 
     @db_session
-    def whatsapp_url(self, slug: str, solicitud_id: int | None, recurso: str | None) -> str:
-        """Suma el click (si viene de una solicitud) y arma el link al chat de Juan."""
+    def whatsapp_url(self, slug: str, solicitud_id: int | None, recurso: str | None, pase: str | None) -> str:
+        """Suma el click (solo con pase válido, así no se inflan) y arma el link al chat de Juan."""
         area = get_area(slug)
-        if solicitud_id:
+        if solicitud_id and acceso.valido(slug, pase):
             solicitud = Solicitud.get(id=solicitud_id, area=slug)
             if solicitud:
                 solicitud.whatsapp_clicks += 1

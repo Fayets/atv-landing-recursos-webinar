@@ -26,6 +26,18 @@ El avance queda en `localStorage`: si alguien vuelve a escanear el QR, retoma do
 Los textos (opciones de cuello de botella, títulos de los SOPs) viven en
 `frontend/src/content/areas.js`.
 
+## Seguridad
+
+- La contraseña se valida en el backend y devuelve un **pase firmado** (12 h, por área, atado a la
+  contraseña vigente). Sin pase no se manda el formulario ni suman clicks: editar el
+  `localStorage` no sirve. Firma con `RECURSOS_SECRET`.
+- `/admin`: 8 PIN incorrectos en 15 min bloquean esa IP (tabla `intentos_admin`, compartida
+  entre los 4 procesos). El PIN tiene que ser largo.
+- Las portadas de `public/sops` ya vienen desenfocadas en el archivo; las originales quedan fuera
+  del repo en `sops-originales/`.
+- El CSV neutraliza fórmulas (`=`, `+`, `-`, `@`). nginx manda CSP, `X-Frame-Options` y
+  `nosniff`; el nginx del host limita pedidos por IP.
+
 ## Local
 
 ```bash

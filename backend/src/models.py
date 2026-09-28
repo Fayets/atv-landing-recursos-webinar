@@ -23,3 +23,12 @@ class Solicitud(db.Entity):
     intento = Optional(str, default="")
     whatsapp_clicks = Required(int, default=0)
     created_at = Required(datetime, default=datetime.utcnow)
+
+
+class IntentoAdmin(db.Entity):
+    """PIN incorrecto en /admin: para frenar a quien prueba PINs en serie."""
+
+    _table_ = table("intentos_admin")
+    id = PrimaryKey(int, auto=True)
+    ip = Required(str)
+    created_at = Required(datetime, default=datetime.utcnow)
