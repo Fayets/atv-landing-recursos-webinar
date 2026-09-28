@@ -263,10 +263,9 @@ textarea.rc-input { resize: none; overflow: hidden; min-height: 96px; }
 .rc-input--code {
   height: 58px;
   text-align: center;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .rc-error {

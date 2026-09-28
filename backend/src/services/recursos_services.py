@@ -1,4 +1,5 @@
 import hmac
+import unicodedata
 import re
 from urllib.parse import quote
 
@@ -14,7 +15,9 @@ from src.models import Desbloqueo, Solicitud
 
 
 def _normalizar(texto: str) -> str:
-    return texto.strip().upper()
+    """Juan la dice en voz alta: no importan mayúsculas, espacios ni acentos."""
+    sin_acentos = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode()
+    return re.sub(r"[^a-z0-9]", "", sin_acentos.lower())
 
 
 class RecursosServices:

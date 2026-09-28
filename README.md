@@ -13,8 +13,8 @@ llevan a WhatsApp.
 
 ## Las tres vistas
 
-1. **Contraseña.** Se valida en el backend, sin distinguir mayúsculas. Hoy es `ATV` para las
-   tres. Se cambia en `backend/.env` (`PASSWORD_MARKETING`, `PASSWORD_VENTAS`,
+1. **Contraseña.** Se valida en el backend; no importan mayúsculas, espacios ni acentos ("Los
+   Mentores High Ticket" también entra). Hoy es `losmentoreshighticket` para las tres. Se cambia en `backend/.env` (`PASSWORD_MARKETING`, `PASSWORD_VENTAS`,
    `PASSWORD_BACKEND`, o `PASSWORD_DEFAULT` para todas) y
    `docker compose up -d --force-recreate backend` — no hace falta rebuildear el frontend.
 2. **Formulario** "Te voy a dar mis mejores 5 SOPs": número de WhatsApp, cuello de botella
@@ -51,7 +51,7 @@ desde internet: se entra solo por el nginx del host.
    ```
 
    En `backend/.env`: `DB_PROVIDER=postgres` + las `DB_*` de la Neon compartida (las mismas que
-   usan las otras apps) con `DB_SCHEMA=recursos`, `ADMIN_PIN`, `PASSWORD_DEFAULT=ATV` y
+   usan las otras apps) con `DB_SCHEMA=recursos`, `ADMIN_PIN`, `PASSWORD_DEFAULT=losmentoreshighticket` y
    `WHATSAPP_NUMBER=5491162626702`. Con SQLite adentro del contenedor se pierden los datos en
    cada rebuild.
 

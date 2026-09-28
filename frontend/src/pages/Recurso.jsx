@@ -87,7 +87,8 @@ function Contrasena({ area, info, onOk }) {
                 if (error) setError('')
               }}
               autoComplete="off"
-              autoCapitalize="characters"
+              autoCapitalize="none"
+              autoCorrect="off"
               spellCheck={false}
               disabled={loading}
             />
