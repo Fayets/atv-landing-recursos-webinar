@@ -1,5 +1,8 @@
 """Las tres áreas del webinar. La URL de cada una es recursos.atvos.io/<slug>."""
 
+import json
+import os
+
 from decouple import config
 from fastapi import HTTPException
 
@@ -21,3 +24,17 @@ def password_for(slug: str) -> str:
     """La contraseña que Juan dice en vivo. Se cambia en el .env sin redeployar el frontend."""
     area = get_area(slug)
     return config(area["env"], default="") or config("PASSWORD_DEFAULT", default="ATV")
+
+
+# Los 2 SOPs gratis de cada área: título → link. Viven en backend/gratis.json, que NO se sube
+# al repo (es público): el navegador nunca ve los links, los entrega /api/recursos/<area>/gratis
+# a quien tiene pase y completó el formulario. Sin el archivo, no hay gratis.
+_GRATIS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "gratis.json")
+
+
+def gratis_de(slug: str) -> dict:
+    try:
+        with open(_GRATIS_PATH, encoding="utf-8") as f:
+            return json.load(f).get(slug, {})
+    except (OSError, ValueError):
+        return {}

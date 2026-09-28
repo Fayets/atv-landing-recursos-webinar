@@ -5,7 +5,7 @@ from pony.orm import count, db_session, delete, desc, select
 
 from src import schemas
 from src.areas import AREAS
-from src.models import Desbloqueo, Solicitud
+from src.models import DescargaGratis, Desbloqueo, Solicitud
 
 
 class AdminServices:
@@ -16,11 +16,15 @@ class AdminServices:
                 area=slug,
                 desbloqueos=count(d for d in Desbloqueo if d.area == slug),
                 solicitudes=count(s for s in Solicitud if s.area == slug),
+                gratis=len(set(select(g.solicitud_id for g in DescargaGratis if g.area == slug)[:])),
                 whatsapp=count(s for s in Solicitud if s.area == slug and s.whatsapp_clicks > 0),
             )
             for slug in AREAS
         ]
         filas = select(s for s in Solicitud).order_by(desc(Solicitud.id))[:]
+        abiertos = {}
+        for g in select(g for g in DescargaGratis)[:]:
+            abiertos.setdefault(g.solicitud_id, set()).add(g.recurso)
         items = [
             schemas.SolicitudItem(
                 id=s.id,
@@ -29,6 +33,7 @@ class AdminServices:
                 cuello=s.cuello,
                 intento=s.intento,
                 whatsapp_clicks=s.whatsapp_clicks,
+                gratis=len(abiertos.get(s.id, ())),
                 created_at=s.created_at,
             )
             for s in filas
@@ -42,7 +47,11 @@ class AdminServices:
     @db_session
     def reset(self) -> dict:
         """Borra desbloqueos y solicitudes: para dejar el panel en cero antes del vivo."""
-        borradas = {"desbloqueos": delete(d for d in Desbloqueo), "solicitudes": delete(s for s in Solicitud)}
+        borradas = {
+            "desbloqueos": delete(d for d in Desbloqueo),
+            "solicitudes": delete(s for s in Solicitud),
+            "gratis": delete(g for g in DescargaGratis),
+        }
         return borradas
 
     @staticmethod

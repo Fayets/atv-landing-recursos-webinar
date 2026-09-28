@@ -35,6 +35,7 @@ function Embudo({ area }) {
   const pasos = [
     ['Desbloqueos', area.desbloqueos],
     ['Formularios', area.solicitudes],
+    ['Gratis', area.gratis ?? 0],
     ['WhatsApp', area.whatsapp],
   ]
   const max = Math.max(area.desbloqueos, 1)
@@ -255,11 +256,11 @@ export default function Admin() {
           <div className="table-scroll">
             <table className="leads-table">
               <thead>
-                <tr><th>Fecha</th><th>Área</th><th>WhatsApp</th><th>Cuello de botella</th><th>Qué intentó</th><th>Tocó wsp</th></tr>
+                <tr><th>Fecha</th><th>Área</th><th>WhatsApp</th><th>Cuello de botella</th><th>Qué intentó</th><th>Gratis</th><th>Tocó wsp</th></tr>
               </thead>
               <tbody>
                 {visibles.length === 0 ? (
-                  <tr><td colSpan={6} className="empty">Todavía no hay solicitudes.</td></tr>
+                  <tr><td colSpan={7} className="empty">Todavía no hay solicitudes.</td></tr>
                 ) : visibles.map((s) => (
                   <tr key={s.id}>
                     <td className="nowrap">{fecha(s.created_at)}</td>
@@ -267,6 +268,7 @@ export default function Admin() {
                     <td className="nowrap">{s.telefono}</td>
                     <td>{s.cuello}</td>
                     <td className="muted">{s.intento || '—'}</td>
+                    <td className="nowrap">{s.gratis ? <span className="pill pill-wa">{s.gratis}/2</span> : <span className="pill pill-idle">0/2</span>}</td>
                     <td>{s.whatsapp_clicks ? <span className="pill pill-wa">Sí</span> : <span className="pill pill-idle">No</span>}</td>
                   </tr>
                 ))}

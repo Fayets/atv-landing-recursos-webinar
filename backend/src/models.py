@@ -32,3 +32,14 @@ class IntentoAdmin(db.Entity):
     id = PrimaryKey(int, auto=True)
     ip = Required(str)
     created_at = Required(datetime, default=datetime.utcnow)
+
+
+class DescargaGratis(db.Entity):
+    """Cada vez que alguien abre uno de los 2 SOPs gratis de su área."""
+
+    _table_ = table("descargas_gratis")
+    id = PrimaryKey(int, auto=True)
+    area = Required(str)
+    recurso = Required(str)
+    solicitud_id = Required(int)
+    created_at = Required(datetime, default=datetime.utcnow)

@@ -22,3 +22,11 @@ export function Check({ size = 16 }) {
     </svg>
   )
 }
+
+export function Abrir({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M7 17 17 7M9 7h8v8" />
+    </svg>
+  )
+}

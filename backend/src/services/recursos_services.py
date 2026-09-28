@@ -10,8 +10,8 @@ from datetime import datetime, timedelta
 from pony.orm import db_session, desc, select
 
 from src import acceso, schemas
-from src.areas import get_area, password_for
-from src.models import Desbloqueo, Solicitud
+from src.areas import get_area, gratis_de, password_for
+from src.models import DescargaGratis, Desbloqueo, Solicitud
 
 
 def _normalizar(texto: str) -> str:
@@ -69,3 +69,16 @@ class RecursosServices:
         # El nombre del SOP tocado; el botón general pide los del área.
         nombre = " ".join((recurso or "").split())[:120] or f"los SOPs de {area['nombre']}"
         return f"https://wa.me/{numero}?text={quote(f'Juan, quiero desbloquear {nombre}')}"
+
+    @db_session
+    def gratis_url(self, slug: str, recurso: str, solicitud_id: int | None, pase: str | None) -> str:
+        """Entrega uno de los 2 SOPs gratis: solo con pase y con el formulario completo."""
+        get_area(slug)
+        acceso.exigir(slug, pase)
+        url = gratis_de(slug).get(recurso)
+        if not url:
+            raise HTTPException(status_code=404, detail="Ese recurso no es gratis.")
+        if not solicitud_id or not Solicitud.get(id=solicitud_id, area=slug):
+            raise HTTPException(status_code=403, detail="Completá el formulario para recibirlo.")
+        DescargaGratis(area=slug, recurso=recurso, solicitud_id=solicitud_id)
+        return url

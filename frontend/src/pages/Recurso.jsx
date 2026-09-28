@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
-import { crearSolicitud, unlock, whatsappHref } from '../api.js'
-import { Lock, WhatsApp } from '../components/Icons.jsx'
+import { crearSolicitud, gratisHref, unlock, whatsappHref } from '../api.js'
+import { Abrir, Lock, WhatsApp } from '../components/Icons.jsx'
 import { SopSides } from '../components/SopPreview.jsx'
 import { AREAS } from '../content/areas.js'
 import { guardarProgreso, leerProgreso } from '../lib/progreso.js'
@@ -214,27 +214,34 @@ function Formulario({ area, info, token, onOk, onVencido }) {
 
 function Sops({ area, info, solicitudId, token }) {
   const href = whatsappHref(area, solicitudId, undefined, token)
+  // Los gratis van primero: se abren ya. El resto sigue con candado hacia WhatsApp.
+  const sops = [...info.sops].sort((x, y) => Number(Boolean(y.gratis)) - Number(Boolean(x.gratis)))
+  const gratis = sops.filter((s) => s.gratis).length
   return (
     <main className="rc-main rc-main--wide">
       <h1 className="rc-title">
         Tus SOPs de <em>{info.nombre}</em> están listos
       </h1>
-      <p className="rc-sub">Tocá cualquiera para desbloquearlo por WhatsApp.</p>
+      <p className="rc-sub">
+        {gratis
+          ? `Los ${gratis} primeros son tuyos: abrilos ya. Los otros ${sops.length - gratis} los desbloqueás por WhatsApp.`
+          : 'Tocá cualquiera para desbloquearlo por WhatsApp.'}
+      </p>
 
       <div className="rc-sops">
-        {info.sops.map((sop, i) => (
+        {sops.map((sop, i) => (
           <a
             key={sop.titulo}
-            className={`rc-sop${sop.imagen ? ' rc-sop--cover' : ''}`}
-            href={whatsappHref(area, solicitudId, sop.titulo, token)}
+            className={`rc-sop${sop.imagen ? ' rc-sop--cover' : ''}${sop.gratis ? ' rc-sop--gratis' : ''}`}
+            href={sop.gratis ? gratisHref(area, solicitudId, sop.titulo, token) : whatsappHref(area, solicitudId, sop.titulo, token)}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`Desbloquear ${sop.titulo} por WhatsApp`}
+            aria-label={sop.gratis ? `Abrir ${sop.titulo} (gratis)` : `Desbloquear ${sop.titulo} por WhatsApp`}
             style={{ '--i': i }}
           >
             {sop.imagen ? (
               <>
-                <img className="rc-sop__cover" src={sop.imagen} alt="" loading="lazy" />
+                <img className="rc-sop__cover" src={sop.gratis ? sop.abierta : sop.imagen} alt="" loading="lazy" />
                 <span className="rc-sop__num">{String(i + 1).padStart(2, '0')}</span>
                 <span className="rc-sop__name">{sop.titulo}</span>
               </>
@@ -251,7 +258,8 @@ function Sops({ area, info, solicitudId, token }) {
                 </div>
               </>
             )}
-            <span className="rc-sop__lock"><Lock size={16} /></span>
+            {sop.gratis ? <span className="rc-sop__badge">Gratis</span> : null}
+            <span className="rc-sop__lock">{sop.gratis ? <Abrir size={16} /> : <Lock size={16} />}</span>
           </a>
         ))}
       </div>

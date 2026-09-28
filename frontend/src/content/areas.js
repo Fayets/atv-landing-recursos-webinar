@@ -1,6 +1,8 @@
 // Las tres landings: recursos.atvos.io/marketing, /ventas y /back-end.
 // Los 5 SOPs de cada área, con la portada real del entregable desenfocada detrás del candado.
 // Salen del doc maestro de SOPs; las capturas viven en public/sops/.
+// `gratis`: 2 por área que se entregan al completar el formulario. Sus links NO están acá:
+// viven en backend/gratis.json (fuera del repo) y los entrega el servidor.
 
 export const AREAS = {
   marketing: {
@@ -12,12 +14,12 @@ export const AREAS = {
       'Mi contenido no llega a suficiente gente',
       'No tengo sistema de contenido',
     ],
-        sops: [
+    sops: [
       { titulo: 'SOP: Laboratorio de Contenido', imagen: '/sops/marketing-laboratorio.jpg' },
       { titulo: 'Sistema de Generación de Leads', imagen: '/sops/marketing-leads.jpg' },
-      { titulo: 'SOP: Cómo Crear Reels', imagen: '/sops/marketing-reels.jpg' },
+      { titulo: 'SOP: Cómo Crear Reels', imagen: '/sops/marketing-reels.jpg', gratis: true, abierta: '/sops/marketing-reels-abierto.jpg' },
       { titulo: 'SOP: Videos de YouTube', imagen: '/sops/marketing-youtube.jpg' },
-      { titulo: 'SOP: Calendario de Contenido', imagen: '/sops/marketing-calendario.jpg' },
+      { titulo: 'SOP: Calendario de Contenido', imagen: '/sops/marketing-calendario.jpg', gratis: true, abierta: '/sops/marketing-calendario-abierto.jpg' },
     ],
   },
   ventas: {
@@ -33,8 +35,8 @@ export const AREAS = {
       { titulo: 'Laboratorio de Ventas', imagen: '/sops/ventas-laboratorio.jpg' },
       { titulo: 'Estándar de Equipo de Ventas', imagen: '/sops/ventas-estandar.jpg' },
       { titulo: 'Rol y Responsabilidades del Director de Ventas', imagen: '/sops/ventas-director.jpg' },
-      { titulo: 'Reporte de Calls', imagen: '/sops/ventas-reporte.jpg' },
-      { titulo: 'Hábitos del Closer', imagen: '/sops/ventas-habitos.jpg' },
+      { titulo: 'Reporte de Calls', imagen: '/sops/ventas-reporte.jpg', gratis: true, abierta: '/sops/ventas-reporte-abierto.jpg' },
+      { titulo: 'Hábitos del Closer', imagen: '/sops/ventas-habitos.jpg', gratis: true, abierta: '/sops/ventas-habitos-abierto.jpg' },
     ],
   },
   'back-end': {
@@ -47,10 +49,10 @@ export const AREAS = {
       'No tengo diagnóstico claro de dónde estoy parado',
     ],
     sops: [
-      { titulo: 'SOP: Diagnóstico de Negocio', imagen: '/sops/backend-diagnostico.jpg' },
+      { titulo: 'SOP: Diagnóstico de Negocio', imagen: '/sops/backend-diagnostico.jpg', gratis: true, abierta: '/sops/backend-diagnostico-abierto.jpg' },
       { titulo: 'SOP: Diagnóstico de Capas de Negocio', imagen: '/sops/backend-capas.jpg' },
       { titulo: 'SOP: Lectura y Acción en Ciclos de Mercado', imagen: '/sops/backend-ciclos.jpg' },
-      { titulo: 'Prompt: Análisis de Investigación de Audiencia', imagen: '/sops/backend-audiencia.jpg' },
+      { titulo: 'Prompt: Análisis de Investigación de Audiencia', imagen: '/sops/backend-audiencia.jpg', gratis: true, abierta: '/sops/backend-audiencia-abierto.jpg' },
       { titulo: 'SOP: Auditoría de Producto', imagen: '/sops/backend-auditoria.jpg' },
     ],
   },

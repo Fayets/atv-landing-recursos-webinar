@@ -60,6 +60,14 @@ export function whatsappHref(area, solicitudId, recurso, token) {
   return `${BASE}/api/recursos/${area}/whatsapp${qs ? `?${qs}` : ''}`
 }
 
+// Los SOPs gratis: el server valida pase y formulario y recién ahí redirige al documento.
+export function gratisHref(area, solicitudId, recurso, token) {
+  const params = new URLSearchParams({ r: recurso })
+  if (solicitudId) params.set('s', solicitudId)
+  if (token) params.set('t', token)
+  return `${BASE}/api/recursos/${area}/gratis?${params}`
+}
+
 export const getAdmin = (pin) => request('/api/admin/solicitudes', { pin }).then((r) => r.json())
 export const resetDatos = (pin) => request('/api/admin/reset', { method: 'POST', pin }).then((r) => r.json())
 export const downloadCsv = (pin) => request('/api/admin/solicitudes.csv', { pin }).then((r) => r.blob())

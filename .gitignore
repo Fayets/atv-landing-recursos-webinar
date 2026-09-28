@@ -14,3 +14,4 @@ dist/
 .DS_Store
 .claude/
 sops-originales/
+backend/gratis.json

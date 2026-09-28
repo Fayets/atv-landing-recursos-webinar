@@ -39,3 +39,14 @@ def whatsapp(area: str, s: Optional[int] = None, r: Optional[str] = None, t: Opt
         raise e
     except Exception:
         raise HTTPException(status_code=500, detail="Error inesperado al abrir WhatsApp.")
+
+
+@router.get("/{area}/gratis")
+def gratis(area: str, r: str, s: Optional[int] = None, t: Optional[str] = None):
+    """Los SOPs gratis se abren por acá: el link real nunca llega al navegador antes de tiempo."""
+    try:
+        return RedirectResponse(service.gratis_url(area, r, s, t), status_code=302)
+    except HTTPException as e:
+        raise e
+    except Exception:
+        raise HTTPException(status_code=500, detail="Error inesperado al abrir el recurso.")
